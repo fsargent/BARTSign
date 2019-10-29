@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from samplebase import SampleBase
+from base import Base
 from rgbmatrix import graphics
 import time
 import requests
@@ -20,7 +20,7 @@ API_KEY = os.getenv("API_KEY")
 # https://uxdesign.cc/countdown-clocks-for-the-mta-79fa8013a0e7
 # http://api.bart.gov/docs/etd/etd.aspx
 
-class BARTSign(SampleBase):
+class BARTSign(Base):
     def __init__(self, *args, **kwargs):
         super(BARTSign, self).__init__(*args, **kwargs)
 
