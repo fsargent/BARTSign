@@ -30,15 +30,8 @@ pipenv shell
 # Setup https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python
 sudo pipenv run make -C ./rpi-rgb-led-matrix/bindings/python build-python PYTHON=$(which python3)
 sudo pipenv install '-e ./rpi-rgb-led-matrix/bindings/python' # runs setup.py install for pipenv
-```
-
-## Get a BART API key
-
- Get a BART API key from http://api.bart.gov/docs/overview/index.aspx
-
-```bash
 # Run it!
-echo "API_KEY=XXX-XXX-XXX" > .env
+echo "API_KEY=XXX-XXX-XXX" > .env # Get a BART API key from http://api.bart.gov/docs/overview/index.aspx
 sudo pipenv run python3 bart.py
 ```
 
