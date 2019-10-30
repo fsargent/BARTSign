@@ -2,7 +2,7 @@
 
 Use Raspberry Pi to power a RBG Matrix Display to show BART Arrival times.
 
-![image](i.imgur.com/iaVmHZhb.jpg)
+![image](https://i.imgur.com/iaVmHZhb.jpg)
 
 Uses:
 
