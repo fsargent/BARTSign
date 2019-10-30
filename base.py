@@ -10,16 +10,19 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
 class Base(object):
     def __init__(self, *args, **kwargs):
         self.parser = argparse.ArgumentParser()
-
+        self.parser.add_argument("-s", "--station", action="store",
+                                 help="Display BART station. See http://api.bart.gov/docs/overview/abbrev.aspx. Default: 19th", default="19th", type=str)
+        self.parser.add_argument("-p", "--platform", action="store",
+                                 help="Which platform? Optional 1-4", type=int)
         self.parser.add_argument("-r", "--led-rows", action="store",
                                  help="Display rows. 16 for 16x32, 32 for 32x32. Default: 32", default=16, type=int)
         self.parser.add_argument("--led-cols", action="store",
-                                 help="Panel columns. Typically 32 or 64. (Default: 32)", default=32, type=int)
+                                 help="Panel columns. Typically 32 or 64. Default: 32", default=32, type=int)
         self.parser.add_argument("-c", "--led-chain", action="store",
                                  help="Daisy-chained boards. Default: 1.", default=3, type=int)
         self.parser.add_argument("-P", "--led-parallel", action="store",
                                  help="For Plus-models or RPi2: parallel chains. 1..3. Default: 1", default=1, type=int)
-        self.parser.add_argument("-p", "--led-pwm-bits", action="store",
+        self.parser.add_argument("-w", "--led-pwm-bits", action="store",
                                  help="Bits used for PWM. Something between 1..11. Default: 11", default=11, type=int)
         self.parser.add_argument("-b", "--led-brightness", action="store",
                                  help="Sets brightness level. Default: 100. Range: 1..100", default=100, type=int)
@@ -80,7 +83,7 @@ class Base(object):
 
         try:
             # Start loop
-            print("Press CTRL-C to stop")
+            print("Press CTRL-C to stop sample")
             self.run()
         except KeyboardInterrupt:
             print("Exiting\n")
