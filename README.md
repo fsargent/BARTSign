@@ -4,13 +4,20 @@ Use Raspberry Pi to power a RBG Matrix Display to show BART Arrival times.
 
 ![image](https://i.imgur.com/iaVmHZhb.jpg)
 
-Uses:
+See the movie: https://imgur.com/gallery/my5vVdl
+
+Parts:
 
 - 3x \$25 [Medium 16x32 RGB LED matrix panel](https://www.adafruit.com/product/420)
 - 1x \$25 [5V 10A switching power supply](https://www.adafruit.com/product/658)
 - 1x \$35 [Raspberry Pi 3 - Model B+](https://www.adafruit.com/product/3775)
 
-## Installation
+## Wire the Boards  
+
+Follow [these instructions by the maker](https://github.com/hzeller/rpi-rgb-led-matrix/blob/master/wiring.md) of the RaspberryPi RGB Matrix Library.
+I've edited the defaults of base.py to assume you're using 3x 16x32 boards. Inspect base.py to change these defaults, or via flags. It's predictable.
+
+## Code Setup
 
 ```bash
 sudo apt-get update && sudo apt-get install git python3-dev python3-pillow libtiff-dev  zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev tcl8.5-dev tk8.5-dev -y
@@ -30,4 +37,12 @@ Get a BART API key from http://api.bart.gov/docs/overview/index.aspx
 ```
 echo "API_KEY=XXX-XXX-XXX" > .env
 sudo pipenv run python3 bart.py
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s STATION, --station STATION
+                        Display BART station. See http://api.bart.gov/docs/overview/abbrev.aspx.
+                        Default: 19th
+  -p PLATFORM, --platform PLATFORM
+                        Which platform? Optional 1-4
 ```
