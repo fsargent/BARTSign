@@ -12,7 +12,7 @@ See the movie: https://imgur.com/gallery/my5vVdl
 - 1x \$25 [5V 10A switching power supply](https://www.adafruit.com/product/658)
 - 1x \$35 [Raspberry Pi 3 - Model B+](https://www.adafruit.com/product/3775)
 
-## Wire the Boards  
+## Wire the Boards
 
 Follow [these instructions by the maker](https://github.com/hzeller/rpi-rgb-led-matrix/blob/master/wiring.md) of the RaspberryPi RGB Matrix Library.
 I've edited the defaults of base.py to assume you're using 3x 16x32 boards. Inspect base.py to change these defaults, or via flags. It's predictable.
@@ -23,15 +23,16 @@ I've edited the defaults of base.py to assume you're using 3x 16x32 boards. Insp
 sudo apt-get update && sudo apt-get install git python3-dev python3-pillow libtiff-dev  zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev tcl8.5-dev tk8.5-dev -y
 pip install --user pipenv
 git clone git@github.com:fsargent/BARTSign.git
-git submodule init
-git submodule update
-pipenv install
-pipenv shell
+cd BARTSign
 # Setup https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python
+git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
 sudo pipenv run make -C ./rpi-rgb-led-matrix/bindings/python build-python PYTHON=$(which python3)
 sudo pipenv install '-e ./rpi-rgb-led-matrix/bindings/python' # runs setup.py install for pipenv
-# Run it!
+pipenv install dotenv
+pipenv install
+pipenv shell
 echo "API_KEY=XXX-XXX-XXX" > .env # Get a BART API key from http://api.bart.gov/docs/overview/index.aspx
+# Run it!
 sudo pipenv run python3 bart.py
 ```
 

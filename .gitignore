@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+rpi-rgb-led-matrix/
 # Distribution / packaging
 .Python
 build/

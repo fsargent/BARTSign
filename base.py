@@ -11,9 +11,9 @@ class Base(object):
     def __init__(self, *args, **kwargs):
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument("-s", "--station", action="store",
-                                 help="Display BART station. See http://api.bart.gov/docs/overview/abbrev.aspx. Default: 19th", default="19th", type=str)
+                                 help="Display BART station. See http://api.bart.gov/docs/overview/abbrev.aspx. Default: 19th", default=os.environ.get('BART_STATION', "19th"), type=str)
         self.parser.add_argument("-p", "--platform", action="store",
-                                 help="Which platform? Optional 1-4", type=int)
+                                 help="Which platform? Optional 1-4", default=os.environ.get('BART_PLATFORM', None), type=int)
         self.parser.add_argument("-r", "--led-rows", action="store",
                                  help="Display rows. 16 for 16x32, 32 for 32x32. Default: 32", default=16, type=int)
         self.parser.add_argument("--led-cols", action="store",

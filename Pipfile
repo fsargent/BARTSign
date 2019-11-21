@@ -9,9 +9,8 @@ autopep8 = "*"
 [packages]
 requests = "*"
 inflect = "*"
-python-dotenv = "*"
-rgbmatrix = {editable = true,path = "./rpi-rgb-led-matrix/bindings/python"}
 pillow = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"

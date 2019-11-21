@@ -1,18 +1,17 @@
 #!/usr/bin/env python
+import os
+from dotenv import load_dotenv
 from base import Base
 from rgbmatrix import graphics
 import time
 import requests
 import json
-import inflect
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 p = inflect.engine()
 
-from dotenv import load_dotenv
 load_dotenv()
 
-import os
 API_KEY = os.getenv("API_KEY")
 
 # Inspiration and resources:
@@ -28,7 +27,7 @@ class BARTSign(Base):
         self.offscreen_canvas = self.matrix.CreateFrameCanvas()
         self.trains = self.getTrains()
         self.refresh_rate = 0.25
-        self.scroller = 0 
+        self.scroller = 0
         timer = time.time()
         bart_api_update_seconds = 60
 
@@ -40,7 +39,7 @@ class BARTSign(Base):
                 self.printTrain(int(time.time() // 5 % 2) + 1, 1)
             else:
                 self.drawError()
-            
+
             # Get the new schedule every minute.
             if (timer + bart_api_update_seconds) < time.time():
                 self.trains = self.getTrains()
@@ -50,20 +49,21 @@ class BARTSign(Base):
                 self.offscreen_canvas)
             # This controls scrolling speed.
             time.sleep(self.refresh_rate)
-    
+
     def drawError(self):
         self.refresh_rate = 0.01
         font = graphics.Font()
         font.LoadFont("./rpi-rgb-led-matrix/fonts/5x7.bdf")
         font_height = 7
         len = graphics.DrawText(self.offscreen_canvas,
-                        font,
-                        self.scroller,
-                        font_height,
-                        graphics.Color(225, 0, 0),
-                        f"Error: {self.trains.args[0]}")
+                                font,
+                                self.scroller,
+                                font_height,
+                                graphics.Color(225, 0, 0),
+                                f"Error: {self.trains.args[0]}")
         self.scroller -= 1
-        if ( self.scroller + len < -len): self.scroller = 0
+        if (self.scroller + len < -len):
+            self.scroller = 0
 
     def getTrains(self):
         try:
@@ -73,10 +73,14 @@ class BARTSign(Base):
             bart_response = requests.get(bartURL)
             logging.debug(bart_response.text)
             logging.debug(bart_response.headers)
-            if bart_response.status_code != 200: raise Exception("Couldn't connect to BART.", str(bart_response.status_code))
-            if "xml" in bart_response.headers['content-type']: raise Exception(bart_response.text.split("details")[1], "400")
+            if bart_response.status_code != 200:
+                raise Exception("Couldn't connect to BART.",
+                                str(bart_response.status_code))
+            if "xml" in bart_response.headers['content-type']:
+                raise Exception(bart_response.text.split("details")[1], "400")
             schedule = json.loads(bart_response.text)
-            if hasattr("warning", schedule["root"]["message"]): raise Exception(schedule["root"]["message"]["warning"], "400")
+            if hasattr("warning", schedule["root"]["message"]):
+                raise Exception(schedule["root"]["message"]["warning"], "400")
             trains = []
 
             # Turn the format into an array of trains
@@ -103,7 +107,6 @@ class BARTSign(Base):
             logging.error(e.args)
             return e
 
-
     def printTrain(self, ref, position):
         font = graphics.Font()
         font.LoadFont("./rpi-rgb-led-matrix/fonts/5x7.bdf")
@@ -119,30 +122,30 @@ class BARTSign(Base):
 
             # Render train position
             graphics.DrawText(self.offscreen_canvas,
-                            font,
-                            destination_x,
-                            destination_y,
-                            graphics.Color(225, 225, 225),
-                            p.ordinal(ref+1))
+                              font,
+                              destination_x,
+                              destination_y,
+                              graphics.Color(225, 225, 225),
+                              p.ordinal(ref+1))
             # Render self.trains[ref] destination
 
             if self.trains[ref]["minutes"] != "Now":
                 graphics.DrawText(self.offscreen_canvas,
-                                font,
-                                destination_x +
-                                len(p.ordinal(ref+1))*font_width,
-                                destination_y,
-                                self.trains[ref]["color"],
-                                self.trains[ref]["destination"])
+                                  font,
+                                  destination_x +
+                                  len(p.ordinal(ref+1))*font_width,
+                                  destination_y,
+                                  self.trains[ref]["color"],
+                                  self.trains[ref]["destination"])
             else:
                 if int(time.time() // .5 % 2) == 1:
                     graphics.DrawText(self.offscreen_canvas,
-                                    font,
-                                    destination_x +
-                                    len(p.ordinal(ref+1))*font_width,
-                                    destination_y,
-                                    self.trains[ref]["color"],
-                                    self.trains[ref]["destination"])
+                                      font,
+                                      destination_x +
+                                      len(p.ordinal(ref+1))*font_width,
+                                      destination_y,
+                                      self.trains[ref]["color"],
+                                      self.trains[ref]["destination"])
 
             # Render arrival time
             times_x = self.offscreen_canvas.width - \
@@ -152,25 +155,25 @@ class BARTSign(Base):
             if self.trains[ref]["delay"] == "0":
                 self.trains[ref]["minutes_color"] = graphics.Color(0, 255, 0)
                 graphics.DrawText(self.offscreen_canvas,
-                                font,
-                                times_x,
-                                times_y,
-                                self.trains[ref]["minutes_color"],
-                                str(self.trains[ref]["minutes"]))
+                                  font,
+                                  times_x,
+                                  times_y,
+                                  self.trains[ref]["minutes_color"],
+                                  str(self.trains[ref]["minutes"]))
             else:
                 # This is an attempt to highlight delayed trains, but not sure how to do it considering limited space and questionable usefulness.
                 self.trains[ref]["minutes_color"] = graphics.Color(255, 0, 0)
                 delay = self.trains[ref]["minutes"] \
-                # + "d" + str(round(int(self.trains[ref]["delay"])/60)) # Nobody understands how to show delays properly.
+                    # + "d" + str(round(int(self.trains[ref]["delay"])/60)) # Nobody understands how to show delays properly.
                 times_x = self.offscreen_canvas.width - \
                     (len(delay) * font_width)
                 times_y = font_height + (position*(font_height+1))
                 graphics.DrawText(self.offscreen_canvas,
-                                font,
-                                times_x,
-                                times_y,
-                                self.trains[ref]["minutes_color"],
-                                delay)
+                                  font,
+                                  times_x,
+                                  times_y,
+                                  self.trains[ref]["minutes_color"],
+                                  delay)
         except IndexError:
             pass
 
