@@ -20,16 +20,14 @@ I've edited the defaults of base.py to assume you're using 3x 16x32 boards. Insp
 ## Setup the Code
 
 ```bash
-sudo apt-get update && sudo apt-get install git python3-dev python3-pillow libtiff-dev  zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev tcl8.5-dev tk8.5-dev -y
+sudo apt-get update && sudo apt-get install git python3.7-dev python3-pillow libtiff-dev  zlib1g-dev libfreetype6-dev liblcms1-dev libwebp-dev tcl8.5-dev tk8.5-dev -y
 pip install --user pipenv
 git clone git@github.com:fsargent/BARTSign.git
 cd BARTSign
 # Setup https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python
 git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
-sudo pipenv run make -C ./rpi-rgb-led-matrix/bindings/python build-python PYTHON=$(which python3)
-sudo pipenv install '-e ./rpi-rgb-led-matrix/bindings/python' # runs setup.py install for pipenv
-pipenv install dotenv
-pipenv install
+pipenv run make -C ./rpi-rgb-led-matrix/bindings/python build-python PYTHON=$(which python3)
+pipenv install '-e ./rpi-rgb-led-matrix/bindings/python' # runs setup.py install for pipenv
 pipenv shell
 echo "API_KEY=XXX-XXX-XXX" > .env # Get a BART API key from http://api.bart.gov/docs/overview/index.aspx
 # Run it!

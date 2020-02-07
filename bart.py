@@ -1,3 +1,4 @@
+from pprint import pformat
 import os
 from dotenv import load_dotenv
 from base import Base
@@ -29,16 +30,18 @@ class BARTSign(Base):
         self.trains = self.getTrains()
         self.refresh_rate = 0.1  # This controls scrolling speed.
         self.scroller = 0
+        self.font = graphics.Font()
+        self.font.LoadFont("./rpi-rgb-led-matrix/fonts/5x7.bdf")
         timer = time.time()
         bart_api_update_seconds = 60
+        second_row_platform = 1
+        counter = 0
 
         while True:
             self.offscreen_canvas.Clear()
             if type(self.trains) != Exception:
-                # Second row will switch between the 2nd and 3rd trains every 5 seconds.
                 self.printTrain(0, 0)
-                self.printTrain(int(time.time() // os.environ.get('SECOND_ROW_SECONDS', 1) %
-                                    os.environ.get('SECOND_ROW_TRAINS', 4)) + 1, 1)
+                self.printTrain(second_row_platform, 1)
             else:
                 self.drawError()
 
@@ -49,15 +52,32 @@ class BARTSign(Base):
 
             self.offscreen_canvas = self.matrix.SwapOnVSync(
                 self.offscreen_canvas)
+
+            # Change the second row every number of seconds.
+            counter = counter % (int(os.environ.get(
+                'SECOND_ROW_SECONDS', 1))/self.refresh_rate)
+            if counter == 0:
+                second_row_platform = (second_row_platform % int(os.environ.get(
+                    'SECOND_ROW_TRAINS', 4))) + 1
+                logging.debug("%s: %s train in %s minutes",
+                              p.ordinal(ref+1),
+                              self.trains[1]["destination"],
+                              str(self.trains[1]["minutes"])
+                              )
+                logging.debug("%s: %s train in %s minutes",
+                              p.ordinal(ref+1),
+                              self.trains[second_row_platform]["destination"],
+                              str(self.trains[second_row_platform]["minutes"])
+                              )
+            counter += 1
+
             time.sleep(self.refresh_rate)
 
     def drawError(self):
         self.refresh_rate = 0.01
-        font = graphics.Font()
-        font.LoadFont("./rpi-rgb-led-matrix/fonts/5x7.bdf")
         font_height = 7
         len = graphics.DrawText(self.offscreen_canvas,
-                                font,
+                                self.font,
                                 self.scroller,
                                 font_height,
                                 graphics.Color(225, 0, 0),
@@ -75,8 +95,8 @@ class BARTSign(Base):
             if self.args.platform:
                 bartURL = f'http://api.bart.gov/api/etd.aspx?cmd=etd&orig={self.args.station}&json=y&plat={self.args.platform}&key={API_KEY}'
             bart_response = requests.get(bartURL)
-            logging.debug(bart_response.text)
-            logging.debug(bart_response.headers)
+            logging.debug(pformat(bart_response.text))
+            logging.debug(pformat(bart_response.text))
             if bart_response.status_code != 200:
                 raise Exception("Couldn't connect to BART.",
                                 str(bart_response.status_code))
@@ -100,7 +120,7 @@ class BARTSign(Base):
 
             trains = sorted(trains, key=lambda i: int(i['minutes']))
 
-            logging.info(trains)
+            logging.info(pformat(trains))
 
             if trains[0]["minutes"] == "0":
                 trains[0]["minutes"] = "Now"
@@ -114,8 +134,6 @@ class BARTSign(Base):
         """
         This is where we write out to the sign.
         """
-        font = graphics.Font()
-        font.LoadFont("./rpi-rgb-led-matrix/fonts/5x7.bdf")
         font_width = 5
         font_height = 7
         try:
@@ -124,45 +142,49 @@ class BARTSign(Base):
                 self.trains[ref]["color"] = graphics.Color(
                     *(tuple(int(self.trains[ref]["hexcolor"].lstrip('#')[i:i+2], 16) for i in (0, 2, 4))))
 
+            # destination positioning.
             destination_x = 0
             destination_y = font_height + (position*(font_height+1))
 
-            # Render train position
+            # arrival time positioning
+            times_x = self.offscreen_canvas.width - \
+                (len(self.trains[ref]["minutes"]) * font_width)
+            times_y = font_height + (position*(font_height+1))
+
+            self.trains[ref]["minutes_color"] = graphics.Color(0, 255, 0)
+
+            # Render train position (ie 1st, 2nd, 3rd)
             graphics.DrawText(self.offscreen_canvas,
-                              font,
+                              self.font,
                               destination_x,
                               destination_y,
                               graphics.Color(225, 225, 225),
                               p.ordinal(ref+1))
             # Render self.trains[ref] destination
 
-            # if self.trains[ref]["minutes"] != "Now":
-            graphics.DrawText(self.offscreen_canvas,
-                              font,
-                              destination_x +
-                              len(p.ordinal(ref+1))*font_width,
-                              destination_y,
-                              self.trains[ref]["color"],
-                              self.trains[ref]["destination"])
-            # else:
-            # Flash a train that's arriving now.
-            # if int(time.time() // .5 % 2) == 1:
-            graphics.DrawText(self.offscreen_canvas,
-                              font,
-                              destination_x +
-                              len(p.ordinal(ref+1))*font_width,
-                              destination_y,
-                              self.trains[ref]["color"],
-                              self.trains[ref]["destination"])
+            if self.trains[ref]["minutes"] != "Now":
+                graphics.DrawText(self.offscreen_canvas,
+                                  self.font,
+                                  destination_x +
+                                  len(p.ordinal(ref+1))*font_width,
+                                  destination_y,
+                                  self.trains[ref]["color"],
+                                  self.trains[ref]["destination"])
 
-            # Render arrival time
-            times_x = self.offscreen_canvas.width - \
-                (len(self.trains[ref]["minutes"]) * font_width)
-            times_y = font_height + (position*(font_height+1))
+            else:
+                # Flash a train that's arriving now.
+                if int(time.time() // .5 % 2) == 1:
+                    graphics.DrawText(self.offscreen_canvas,
+                                      self.font,
+                                      destination_x +
+                                      len(p.ordinal(ref+1))*font_width,
+                                      destination_y,
+                                      self.trains[ref]["color"],
+                                      self.trains[ref]["destination"])
 
-            self.trains[ref]["minutes_color"] = graphics.Color(0, 255, 0)
+            # arrival time
             graphics.DrawText(self.offscreen_canvas,
-                              font,
+                              self.font,
                               times_x,
                               times_y,
                               self.trains[ref]["minutes_color"],

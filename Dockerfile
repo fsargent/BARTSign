@@ -24,7 +24,6 @@ RUN git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
 RUN make -C ./rpi-rgb-led-matrix/bindings/python build-python PYTHON=$(which python3)
 
 COPY Pipfile* ./
-RUN pipenv install --three
 RUN pipenv install '-e ./rpi-rgb-led-matrix/bindings/python'
 COPY . ./
 
@@ -32,4 +31,4 @@ COPY . ./
 ENV UDEV=1
 
 # Run it!
-ENTRYPOINT pipenv run python3 bart.py
+ENTRYPOINT pipenv run python bart.py
