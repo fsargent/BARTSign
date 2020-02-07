@@ -61,8 +61,8 @@ class BARTSign(Base):
                     'SECOND_ROW_TRAINS', 4))) + 1
                 logging.debug("%s: %s train in %s minutes",
                               p.ordinal(1),
-                              self.trains[1]["destination"],
-                              str(self.trains[1]["minutes"])
+                              self.trains[0]["destination"],
+                              str(self.trains[0]["minutes"])
                               )
                 logging.debug("%s: %s train in %s minutes",
                               p.ordinal(second_row_platform+1),
