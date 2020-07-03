@@ -11,6 +11,9 @@ inflect = "*"
 pillow = "*"
 python-dotenv = "*"
 rgbmatrix = {editable = true,path = "./rpi-rgb-led-matrix/bindings/python"}
+requests-mock = "*"
+dbus-python = "*"
+opencv-python = "*"
 
 [requires]
 python_version = "3.7"

@@ -33,15 +33,15 @@ class BARTSign(Base):
         self.font = graphics.Font()
         self.font.LoadFont("./rpi-rgb-led-matrix/fonts/5x7.bdf")
         timer = time.time()
-        bart_api_update_seconds = 60
-        second_row_platform = 1
+        bart_api_update_seconds = 30
+        second_row_train_index = 1
         counter = 0
 
         while True:
             self.offscreen_canvas.Clear()
             if type(self.trains) != Exception:
                 self.printTrain(0, 0)
-                self.printTrain(second_row_platform, 1)
+                self.printTrain(second_row_train_index, 1)
             else:
                 self.drawError()
 
@@ -57,17 +57,21 @@ class BARTSign(Base):
             counter = counter % (int(os.environ.get(
                 'SECOND_ROW_SECONDS', 1))/self.refresh_rate)
             if counter == 0:
-                second_row_platform = (second_row_platform % int(os.environ.get(
-                    'SECOND_ROW_TRAINS', 4))) + 1
+                second_row_train_index = 1 + \
+                    (second_row_train_index %
+                     min(int(os.environ.get('SECOND_ROW_TRAINS', 4)),
+                         len(self.trains)))
+                # Ensure the index can't be out of range of the number of trains we have.
                 logging.debug("%s: %s train in %s minutes",
                               p.ordinal(1),
                               self.trains[0]["destination"],
                               str(self.trains[0]["minutes"])
                               )
                 logging.debug("%s: %s train in %s minutes",
-                              p.ordinal(second_row_platform+1),
-                              self.trains[second_row_platform]["destination"],
-                              str(self.trains[second_row_platform]["minutes"])
+                              p.ordinal(second_row_train_index+1),
+                              self.trains[second_row_train_index]["destination"],
+                              str(self.trains[second_row_train_index]
+                                  ["minutes"])
                               )
             counter += 1
 
