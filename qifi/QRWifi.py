@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import dbus
-import uuid
+# import dbus
 import cv2
 import re
 import time
@@ -12,6 +11,23 @@ import time
 cap = cv2.VideoCapture(0)
 
 detector = cv2.QRCodeDetector()
+
+
+def QiFiData(data):
+    # QiFi codes should be in this format `WIFI:S:<SSID>;T:<WPA|WEP|>;P:<password>;`
+    # data = "WIFI:T:WEP;S:test;P:rainbows\;unicorns\:jedis\,ninjas\\ secure;;" # Demo data
+    ssid_re = r"(?P<ssid>(?<=S:)((?:[^\;\?\"\$\[\\\]\+])|(?:\\[\\;,:]))+(?<!\\;)(?=;))"
+    security_re = r"(?P<security>(?<=T:)[a-zA-Z]+(?=;))"
+    password_re = r"(?P<password>(?<=P:)((?:[;,:])|(?:[^;]))+(?<!;)(?=;))"
+    try:
+        return {
+            "ssid": re.search(ssid_re, data).group(),
+            "security": re.search(security_re, data).group(),
+            "password": re.search(password_re, data).group(),
+        }
+    except:
+        return None
+
 
 while True:
     _, img = cap.read()
@@ -31,29 +47,19 @@ while True:
         if data:
             print("data found: ", data)
             wifi = QiFiData(data)
-            if wifi != False:
-                changeWifi(wifi.ssid, wifi.security, wifi.password)
-    cv2.imshow("code detector", img)
-    if(cv2.waitKey(1) == ord("q")):
-        break
+            if wifi != None:
+                print("Valid QiFi code found!", wifi)
+                # changeWifi(wifi.ssid, wifi.security, wifi.password)
+
+                break
+    
+    # Preview window
+    # cv2.imshow("code detector", img)
+    # if(cv2.waitKey(1) == ord("q")):
+    #     break
 cap.release()
 cv2.destroyAllWindows()
 
-
-def QiFiData(data):
-    # QiFi codes should be in this format `WIFI:S:<SSID>;T:<WPA|WEP|>;P:<password>;`
-    data = "WIFI:T:WEP;S:test;P:rainbows\;unicorns\:jedis\,ninjas\\ secure;;"
-    ssid_re = r"(?P<ssid>(?<=S:)((?:[^\;\?\"\$\[\\\]\+])|(?:\\[\\;,:]))+(?<!\\;)(?=;))"
-    security_re = r"(?P<security>(?<=T:)[a-zA-Z]+(?=;))"
-    password_re = r"(?P<password>(?<=P:)((?:[;,:])|(?:[^;]))+(?<!;)(?=;))"
-    try:
-        return {
-            "ssid": re.search(ssid_re, data).group(),
-            "security": re.search(security_re, data).group(),
-            "password": re.search(password_re, data).group(),
-        }
-    except:
-        return None
 
 
 def changeWifi(ssid, security, password):

@@ -6,12 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-requests = "*"
-inflect = "*"
-pillow = "*"
-python-dotenv = "*"
-rgbmatrix = {editable = true,path = "./rpi-rgb-led-matrix/bindings/python"}
-requests-mock = "*"
 opencv-python = "*"
 
 [requires]
