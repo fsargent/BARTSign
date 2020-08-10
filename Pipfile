@@ -4,15 +4,17 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
 
 [packages]
 requests = "*"
 inflect = "*"
-pillow = "*"
+Pillow = ">=7.1.0"
 python-dotenv = "*"
 rgbmatrix = {editable = true,path = "./rpi-rgb-led-matrix/bindings/python"}
 requests-mock = "*"
-opencv-python = "*"
+opencv-python-headless = "*"
+dbus-python = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

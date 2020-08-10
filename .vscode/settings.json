@@ -1,4 +1,6 @@
 {
-  "python.pythonPath": "C:\\Users\\fsargent\\AppData\\Local\\Programs\\Python\\Python36-32\\python.exe",
-  "cSpell.enabled": false
+  "cSpell.enabled": false,
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.pythonPath": "/Users/fsargent/.local/share/virtualenvs/qifi-rgTiJSc5"
 }
