@@ -55,7 +55,7 @@ class BARTSign(Base):
 
             # Change the second row every number of seconds.
             counter = counter % (int(os.environ.get(
-                'SECOND_ROW_SECONDS', 1))/self.refresh_rate)
+                'SECOND_ROW_SECONDS', 1)) / self.refresh_rate)
             if counter == 0:
                 second_row_train_index = 1 + \
                     (second_row_train_index %
@@ -68,7 +68,7 @@ class BARTSign(Base):
                               str(self.trains[0]["minutes"])
                               )
                 logging.debug("%s: %s train in %s minutes",
-                              p.ordinal(second_row_train_index+1),
+                              p.ordinal(second_row_train_index + 1),
                               self.trains[second_row_train_index]["destination"],
                               str(self.trains[second_row_train_index]
                                   ["minutes"])
@@ -144,16 +144,16 @@ class BARTSign(Base):
             if isinstance(self.trains[ref]["color"], str):
                 # Color the destinations the same color as the line.
                 self.trains[ref]["color"] = graphics.Color(
-                    *(tuple(int(self.trains[ref]["hexcolor"].lstrip('#')[i:i+2], 16) for i in (0, 2, 4))))
+                    *(tuple(int(self.trains[ref]["hexcolor"].lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))))
 
             # destination positioning.
             destination_x = 0
-            destination_y = font_height + (position*(font_height+1))
+            destination_y = font_height + (position * (font_height + 1))
 
             # arrival time positioning
             times_x = self.offscreen_canvas.width - \
                 (len(self.trains[ref]["minutes"]) * font_width)
-            times_y = font_height + (position*(font_height+1))
+            times_y = font_height + (position * (font_height + 1))
 
             self.trains[ref]["minutes_color"] = graphics.Color(0, 255, 0)
 
@@ -163,14 +163,14 @@ class BARTSign(Base):
                               destination_x,
                               destination_y,
                               graphics.Color(225, 225, 225),
-                              p.ordinal(ref+1))
+                              p.ordinal(ref + 1))
             # Render self.trains[ref] destination
 
             if self.trains[ref]["minutes"] != "Now":
                 graphics.DrawText(self.offscreen_canvas,
                                   self.font,
                                   destination_x +
-                                  len(p.ordinal(ref+1))*font_width,
+                                  len(p.ordinal(ref + 1)) * font_width,
                                   destination_y,
                                   self.trains[ref]["color"],
                                   self.trains[ref]["destination"])
@@ -181,7 +181,7 @@ class BARTSign(Base):
                     graphics.DrawText(self.offscreen_canvas,
                                       self.font,
                                       destination_x +
-                                      len(p.ordinal(ref+1))*font_width,
+                                      len(p.ordinal(ref + 1)) * font_width,
                                       destination_y,
                                       self.trains[ref]["color"],
                                       self.trains[ref]["destination"])
@@ -200,6 +200,7 @@ class BARTSign(Base):
 
 # Main function
 if __name__ == "__main__":
+    print("Starting BartSign...")
     bart_sign = BARTSign()
     if (not bart_sign.process()):
         bart_sign.print_help()

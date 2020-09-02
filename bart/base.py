@@ -83,7 +83,7 @@ class Base(object):
 
         try:
             # Start loop
-            print("Press CTRL-C to stop sample")
+            print("BARTSign started.")
             self.run()
         except KeyboardInterrupt:
             print("Exiting\n")

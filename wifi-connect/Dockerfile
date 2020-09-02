@@ -13,8 +13,9 @@ RUN install_packages git \
 
 # Install resin-wifi-connect
 RUN curl https://api.github.com/repos/balena-io/wifi-connect/releases/latest -s \
-    | grep -hoP 'browser_download_url": "\K.*rpi\.tar\.gz' \
-    | xargs -n1 curl -Ls \
-    | tar -xvz -C /usr/src/app/
-
-CMD start.sh
+  | grep -hoP 'browser_download_url": "\K.*rpi\.tar\.gz' \
+  | xargs -n1 curl -Ls \
+  | tar -xvz -C /usr/src/app/
+COPY . . 
+RUN chmod +x /usr/src/app/start.sh
+CMD /usr/src/app/start.sh

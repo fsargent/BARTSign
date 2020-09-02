@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+autopep8 = "*"
 
 [packages]
 requests = "*"
@@ -12,9 +13,6 @@ inflect = "*"
 Pillow = ">=7.1.0"
 python-dotenv = "*"
 rgbmatrix = {editable = true,path = "./rpi-rgb-led-matrix/bindings/python"}
-requests-mock = "*"
-opencv-python-headless = "*"
-dbus-python = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
